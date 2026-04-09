@@ -17,6 +17,10 @@ dist/
 build/
 .env
 .env.local
+vite.config.js.timestamp-*
+
+# Project Specific
+uploads/
 
 # Logs
 *.log
@@ -24,3 +28,8 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Temp files
+*.tmp
+*.bak
+*.swp
