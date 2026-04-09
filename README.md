@@ -1,135 +1,110 @@
+# 🛍️ AuraMarket - Professional Full Stack E-commerce
 
-
-# 🛍️ Full Stack E-commerce Web Application
-
-A full-stack **E-commerce application** using **Spring Boot** (Java) for the backend and **ReactJS with Vite** for the frontend. This application demonstrates the integration of RESTful APIs with a modern frontend stack, ideal for learning and demonstration purposes.
+AuraMarket is a high-performance, containerized full-stack **E-commerce application** built with a modern architecture: **Spring Boot** (Java) for a robust backend and **ReactJS with Vite** for a lightning-fast frontend. It integrates **PostgreSQL** for data persistence and is ready for production deployment via **Docker** and **GitHub Actions CI/CD**.
 
 ---
 
 ## 📁 Project Structure
 
+```text
+AuraMarket/
+├── Ecommerce-Backend/    # Spring Boot REST API
+├── Ecommerce-Frontend/   # React + Vite frontend
+├── docker-compose.yml    # Multi-container orchestration
+└── .github/workflows/    # CI/CD pipeline
 ```
-SpringBoot-Reactjs-Ecommerce-main/
-├── Ecommerce-Backend/       # Spring Boot REST API backend
-├── Ecommerce-Frontend/      # React + Vite frontend application
-```
+
+---
+
+## 🚀 Quick Start (Docker - Recommended)
+
+The easiest way to get the entire stack (Backend, Frontend, and PostgreSQL) running is using Docker Compose:
+
+1. **Clone the repository.**
+2. **Setup environment variables**:
+   Create a `.env` file in the root directory (refer to `.env.example`):
+   ```env
+   POSTGRES_USER=your_user
+   POSTGRES_PASSWORD=your_password
+   SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ecommerce
+   ```
+3. **Run the application**:
+   ```bash
+   docker-compose up -d --build
+   ```
+   *   **Frontend**: http://localhost:80
+   *   **Backend API**: http://localhost:8080/api
+   *   **Health Check**: http://localhost:8080/api/health
 
 ---
 
 ## 🧩 Backend - Spring Boot
 
-### 🔧 Technologies Used
+### 🔧 Technologies
+* **Java 17** & **Spring Boot 3.3.3**
+* **Spring Data JPA** (Hibernate)
+* **PostgreSQL** (Primary Database)
+* **Flyway** (Database Migrations)
+* **Maven** (Dependency Management)
 
-* Java 17+
-* Spring Boot
-* Spring Data JPA
-* MySQL (can be adapted)
-* Maven
-
-### 📂 Backend Directory Structure
-
-```
-Ecommerce-Backend/
-├── controller/      # REST endpoints
-├── model/           # JPA entity classes
-├── repo/            # Spring Data JPA interfaces
-├── service/         # Business logic
-├── resources/
-│   ├── application.properties
-│   └── data1.sql
-└── pom.xml          # Maven build config
-```
-
-### ⚙️ Setup Instructions
-
-1. **Database Setup:**
-
-   * Create a MySQL database, e.g., `ecomdb`.
-   * Update `application.properties`:
-
-     ```properties
-     spring.datasource.url=jdbc:mysql://localhost:3306/ecomdb
-     spring.datasource.username=root
-     spring.datasource.password=yourpassword
-     spring.jpa.hibernate.ddl-auto=update
-     ```
-
-2. **Run the App:**
-
+### ⚙️ Local Development (Manual)
+1. Ensure a PostgreSQL instance is running on port `5432`.
+2. Update `Ecommerce-Backend/src/main/resources/application.properties` or set your local environment variables.
+3. Run the application:
    ```bash
    cd Ecommerce-Backend
-   mvn spring-boot:run
+   ./mvnw spring-boot:run
    ```
-
-3. **Data Initialization:**
-
-   On first run, `data1.sql` inserts seed product data into your DB.
-
-### 📡 REST API Endpoints
-
-| Method | Endpoint         | Description        |
-| ------ | ---------------- | ------------------ |
-| GET    | `/products`      | Fetch all products |
-| GET    | `/products/{id}` | Get product by ID  |
-| POST   | `/products`      | Add new product    |
-| PUT    | `/products/{id}` | Update product     |
-| DELETE | `/products/{id}` | Delete product     |
 
 ---
 
 ## 💻 Frontend - React + Vite
 
-### 🔧 Technologies Used
+### 🔧 Technologies
+* **ReactJS** & **Vite**
+* **Axios** (REST Client)
+* **Bootstrap** (Styling)
 
-* ReactJS
-* Vite (bundler)
-* Axios (API calls)
-* Bootstrap (UI)
-* JavaScript (ES6+)
-
-### 📂 Frontend Directory Structure
-
-```
-Ecommerce-Frontend/
-├── public/
-├── src/
-│   ├── components/      # Reusable components
-│   ├── pages/           # Page-level components
-│   ├── App.jsx          # App layout
-│   └── main.jsx         # Entry point
-├── package.json
-└── vite.config.js
-```
-
-### ▶️ Getting Started
-
-1. **Install dependencies:**
-
+### ⚙️ Local Development
+1. Install dependencies:
    ```bash
    cd Ecommerce-Frontend
    npm install
    ```
-
-2. **Run the app:**
-
+2. Run in development mode:
    ```bash
    npm run dev
    ```
+   The app will be available at `http://localhost:5173`.
 
-   This will launch the frontend at `http://localhost:5173`.
+---
 
-3. **Connect to Backend:**
+## 🔄 CI/CD & Deployment
 
-   Update the backend URL in API service files (usually inside `src/` or `src/services/`) if needed:
+AuraMarket includes a production-ready **GitHub Actions pipeline** (`.github/workflows/docker-push.yml`):
 
-   ```js
-   axios.get('http://localhost:8080/products')
-   ```
+* **Automated Builds**: Every push to the `main` branch triggers an automated build of both Docker images.
+* **Auto-Push**: Built images are automatically pushed to your **Docker Hub** repository.
 
-### 🧩 Features
+**Setup Requirements**:
+Configure the following secrets in your GitHub repository:
+- `DOCKER_USERNAME`: Your Docker Hub username.
+- `DOCKER_PASSWORD`: Your Docker Hub Personal Access Token.
 
-* Product List (from Spring Boot backend)
-* Dynamic rendering using React components
-* Fully responsive UI
-* Easy integration with further features (cart, checkout, login)
+---
 
+## 📡 Core API Endpoints
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/products` | Fetch all products |
+| `GET` | `/api/product/{id}` | Get specific product details |
+| `POST` | `/api/product` | Add a new product (with image) |
+| `PUT` | `/api/product/{id}` | Update product details |
+| `DELETE` | `/api/product/{id}` | Delete a product |
+| `GET` | `/api/health` | Check Database & API status |
+
+---
+
+## 🤝 Contributing
+Feel free to fork this project, open issues, or submit pull requests to improve AuraMarket!
