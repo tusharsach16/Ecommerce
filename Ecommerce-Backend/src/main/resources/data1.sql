@@ -1,4 +1,4 @@
-INSERT INTO product (name, desc, brand, price, category, release_date, available, quantity) VALUES
+INSERT INTO product (name, description, brand, price, category, release_date, product_available, stock_quantity) VALUES
 ('MacBook Pro M3', 'Apple M3 chip, 14-inch Liquid Retina XDR display, 16GB RAM, 512GB SSD.', 'Apple', 169900.00, 'Laptop', '2023-10-30', true, 25),
 ('Sony WH-1000XM5', 'Industry-leading noise canceling headphones with exceptional sound quality.', 'Sony', 29900.00, 'Headphone', '2023-05-20', true, 100),
 ('iPhone 15 Pro', 'Titanium design, A17 Pro chip, advanced camera system, and more.', 'Apple', 134900.00, 'Mobile', '2023-09-22', true, 50),
