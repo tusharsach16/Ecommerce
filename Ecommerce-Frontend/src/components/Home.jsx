@@ -129,7 +129,7 @@ const Home = ({ selectedCategory }) => {
                         e.preventDefault();
                         addToCart(product);
                       }}
-                      didb_userbled={!productAvailable}
+                      disabled={!productAvailable}
                     >
                       {productAvailable ? "Add to Cart" : "Out of Stock"}
                     </button> 

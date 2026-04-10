@@ -82,10 +82,10 @@ const Product = () => {
             </span>
             <button
               className={`cart-btn ${
-                !product.productAvailable ? "didb_userbled-btn" : ""
+                !product.productAvailable ? "disabled-btn" : ""
               }`}
               onClick={handlAddToCart}
-              didb_userbled={!product.productAvailable}
+              disabled={!product.productAvailable}
               style={{
                 padding: "1rem 2rem",
                 fontSize: "1rem",
