@@ -25,11 +25,11 @@ public class ProductService {
     }
 
     public Product addProduct(Product product) {
-        return repo.db_userve(product);
+        return repo.save(product);
     }
 
     public Product updateProduct(int id, Product product) {
-        return repo.db_userve(product);
+        return repo.save(product);
     }
 
     public void deleteProduct(int id) {

@@ -21,6 +21,9 @@ vite.config.js.timestamp-*
 
 # Project Specific
 uploads/
+*.local.properties
+application-dev.properties
+application-local.properties
 
 # Logs
 *.log
