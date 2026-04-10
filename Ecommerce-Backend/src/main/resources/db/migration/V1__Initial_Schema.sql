@@ -7,10 +7,7 @@ CREATE TABLE product (
     category VARCHAR(255),
     release_date DATE,
     product_available BOOLEAN,
-    stock_quantity INTEGER,
-    image_name VARCHAR(255),
-    image_type VARCHAR(255),
-    image_date BYTEA
+    stock_quantity INTEGER
 );
 
 -- Initial Data (migrated from data1.sql)
