@@ -15,8 +15,9 @@ CREATE TABLE product (
 
 -- Initial Data (migrated from data1.sql)
 INSERT INTO product (name, description, brand, price, category, release_date, product_available, stock_quantity) VALUES
-('Tata Nexon', 'A compact SUV with excellent db_userfety features and performance.', 'Tata Motors', 750000.00, 'Cars', '2024-01-15', true, 50),
-('Maruti Suzuki Swift', 'A popular hatchback known for its fuel efficiency and reliability.', 'Maruti Suzuki', 550000.00, 'Cars', '2024-02-01', true, 100),
-('Hyundai Creta', 'A stylish SUV with advanced features and comfortable interior.', 'Hyundai', 950000.00, 'Cars', '2024-03-01', true, 75),
-('Mahindra Thar', 'A rugged off-road SUV with a powerful engine and modern amenities.', 'Mahindra', 1200000.00, 'Cars', '2024-04-01', true, 30),
-('Honda City', 'A premium sedan with a sleek design and advanced db_userfety features', 'Honda', 1100000.00, 'Cars', '2024-05-01', true, 60);
+('MacBook Pro M3', 'Apple M3 chip, 14-inch Liquid Retina XDR display, 16GB RAM, 512GB SSD.', 'Apple', 169900.00, 'Laptop', '2023-10-30', true, 25),
+('Sony WH-1000XM5', 'Industry-leading noise canceling headphones with exceptional sound quality.', 'Sony', 29900.00, 'Headphone', '2023-05-20', true, 100),
+('iPhone 15 Pro', 'Titanium design, A17 Pro chip, advanced camera system, and more.', 'Apple', 134900.00, 'Mobile', '2023-09-22', true, 50),
+('Samsung 75-inch 4K TV', 'Crystal Processor 4K, Smart TV with Alexa Built-in, sleek design.', 'Samsung', 85000.00, 'Electronics', '2023-03-15', true, 15),
+('LEGO Star Wars Falcon', 'The Ultimate Collector Series Millennium Falcon with 7541 pieces.', 'LEGO', 79999.00, 'Toys', '2022-09-01', true, 10),
+('Nike Air Jordan 1', 'The iconic high-top basketball shoe in classic Chicago colors.', 'Nike', 15000.00, 'Fashion', '2023-01-10', true, 40);
