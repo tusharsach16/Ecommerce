@@ -8,10 +8,6 @@ const Product = () => {
   const { id } = useParams();
   const { data, addToCart, removeFromCart, cart, refreshData } =
     useContext(AppContext);
-  const [product, setProduct] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
-  const navigate = useNavigate();
-
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -19,20 +15,9 @@ const Product = () => {
           `http://localhost:8080/api/product/${id}`
         );
         setProduct(response.data);
-        if (response.data.imageName) {
-          fetchImage();
-        }
       } catch (error) {
         console.error("Error fetching product:", error);
       }
-    };
-
-    const fetchImage = async () => {
-      const response = await axios.get(
-        `http://localhost:8080/api/product/${id}/image`,
-        { responseType: "blob" }
-      );
-      setImageUrl(URL.createObjectURL(response.data));
     };
 
     fetchProduct();
@@ -68,15 +53,8 @@ const Product = () => {
   }
   return (
     <>
-      <div className="containers" style={{ display: "flex" }}>
-        <img
-          className="left-column-img"
-          src={imageUrl}
-          alt={product.imageName}
-          style={{ width: "50%", height: "auto" }}
-        />
-
-        <div className="right-column" style={{ width: "50%" }}>
+      <div className="containers" style={{ display: "flex", justifyContent: 'center' }}>
+        <div className="right-column" style={{ width: "70%", padding: '2rem', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '10px', marginTop: '2rem' }}>
           <div className="product-description">
             <div style={{display:'flex',justifyContent:'space-between' }}>
             <span style={{ fontSize: "1.2rem", fontWeight: 'lighter' }}>
@@ -117,6 +95,7 @@ const Product = () => {
                 borderRadius: "5px",
                 cursor: "pointer",
                 marginBottom: "1rem",
+                marginLeft: "2rem"
               }}
             >
               {product.productAvailable ? "Add to cart" : "Out of Stock"}
