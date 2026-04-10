@@ -38,11 +38,11 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public ResponseEntity<?> addProduct(@RequestPart Product product, @RequestPart MultipartFile imageFile) {
+    public ResponseEntity<?> addProduct(@RequestBody Product product) {
 
         try {
             System.out.println(product);
-            Product product1 = service.addProduct(product, imageFile);
+            Product product1 = service.addProduct(product);
             return new ResponseEntity<>(product1, HttpStatus.CREATED);
         }
         catch (Exception e) {
@@ -50,28 +50,13 @@ public class ProductController {
         }
     }
 
-    @GetMapping("product/{productId}/image")
-    public ResponseEntity<byte[]> getImageByProductId(@PathVariable int productId){
 
-        Product product = service.getProductById(productId);
-        byte[] imageFile = product.getImageDate();
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(product.getImageType()))
-                .body(imageFile);
-    }
 
     @PutMapping("/product/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable int id,
-                                                @RequestPart Product product,
-                                                @RequestPart MultipartFile imageFile){
+                                                @RequestBody Product product){
 
-        Product product1 = null;
-        try {
-            product1 = service.updateProduct(id, product, imageFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Product product1 = service.updateProduct(id, product);
         if (product1 != null)
             return new ResponseEntity<>("Updated", HttpStatus.OK);
         else
