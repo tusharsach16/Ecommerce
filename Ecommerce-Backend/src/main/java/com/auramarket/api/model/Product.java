@@ -27,10 +27,7 @@ public class Product {
     private boolean productAvailable;
     private int stockQuantity;
 
-    private String imageName;
-    private String imageType;
-    @Lob
-    private byte[] imageDate;
+
 
     public int getId() {
         return id;
@@ -104,27 +101,4 @@ public class Product {
         this.stockQuantity = stockQuantity;
     }
 
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
-    public String getImageType() {
-        return imageType;
-    }
-
-    public void setImageType(String imageType) {
-        this.imageType = imageType;
-    }
-
-    public byte[] getImageDate() {
-        return imageDate;
-    }
-
-    public void setImageDate(byte[] imageDate) {
-        this.imageDate = imageDate;
-    }
 }
