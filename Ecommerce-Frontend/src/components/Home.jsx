@@ -18,30 +18,7 @@ const Home = ({ selectedCategory }) => {
 
   useEffect(() => {
     if (data && data.length > 0) {
-      const fetchImagesAndUpdateProducts = async () => {
-        const updatedProducts = await Promise.all(
-          data.map(async (product) => {
-            try {
-              const response = await axios.get(
-                `http://localhost:8080/api/product/${product.id}/image`,
-                { responseType: "blob" }
-              );
-              const imageUrl = URL.createObjectURL(response.data);
-              return { ...product, imageUrl };
-            } catch (error) {
-              console.error(
-                "Error fetching image for product ID:",
-                product.id,
-                error
-              );
-              return { ...product, imageUrl: "placeholder-image-url" };
-            }
-          })
-        );
-        setProducts(updatedProducts);
-      };
-
-      fetchImagesAndUpdateProducts();
+      setProducts(data);
     }
   }, [data]);
 
@@ -75,13 +52,14 @@ const Home = ({ selectedCategory }) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              gridColumn: "1 / -1",
             }}
           >
             No Products Available
           </h2>
         ) : (
           filteredProducts.map((product) => {
-            const { id, brand, name, price, productAvailable, imageUrl } =
+            const { id, brand, name, price, productAvailable } =
               product;
             const cardStyle = {
               width: "18rem",
@@ -94,7 +72,7 @@ const Home = ({ selectedCategory }) => {
                 className="card mb-3"
                 style={{
                   width: "250px",
-                  height: "360px",
+                  height: "220px",
                   boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
                   borderRadius: "10px",
                   overflow: "hidden", 
@@ -110,18 +88,6 @@ const Home = ({ selectedCategory }) => {
                   to={`/product/${id}`}
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
-                  <img
-                    src={imageUrl}
-                    alt={name}
-                    style={{
-                      width: "100%",
-                      height: "150px", 
-                      objectFit: "cover",  
-                      padding: "5px",
-                      margin: "0",
-                      borderRadius: "10px 10px 10px 10px", 
-                    }}
-                  />
                   <div
                     className="card-body"
                     style={{
@@ -129,7 +95,7 @@ const Home = ({ selectedCategory }) => {
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
-                      padding: "10px",
+                      padding: "20px 10px 10px",
                     }}
                   >
                     <div>
