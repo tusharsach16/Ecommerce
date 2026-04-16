@@ -241,7 +241,7 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© 2024 AuraMarket. Built with ❤️ using React + Spring Boot.</p>
+          <p>© 2026 AuraMarket. Built with ❤️ using React + Spring Boot.</p>
         </div>
       </footer>
     </div>
