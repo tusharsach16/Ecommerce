@@ -1,138 +1,221 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import AppContext from "../Context/Context";
-import unplugged from "../assets/unplugged.png"
+import toast from "react-hot-toast";
 
-const Home = ({ selectedCategory }) => {
+const CATEGORY_ICONS = {
+  Laptop: "💻",
+  Mobile: "📱",
+  Headphone: "🎧",
+  Electronics: "📺",
+  Fashion: "👟",
+  Toys: "🧸",
+};
+
+const CATEGORIES = ["All", "Laptop", "Mobile", "Headphone", "Electronics", "Fashion", "Toys"];
+
+const SORT_OPTIONS = [
+  { label: "Default", value: "default" },
+  { label: "Price: Low to High", value: "price_asc" },
+  { label: "Price: High to Low", value: "price_desc" },
+  { label: "Name A–Z", value: "name_asc" },
+];
+
+const Home = ({ selectedCategory: propCategory }) => {
   const { data, isError, addToCart, refreshData } = useContext(AppContext);
-  const [products, setProducts] = useState([]);
-  const [isDataFetched, setIsDataFetched] = useState(false);
 
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("default");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [addedIds, setAddedIds] = useState({});
+
+  // Sync propCategory from Navbar dropdown
   useEffect(() => {
-    if (!isDataFetched) {
-      refreshData();
-      setIsDataFetched(true);
-    }
-  }, [refreshData, isDataFetched]);
+    if (propCategory) setActiveCategory(propCategory);
+    else setActiveCategory("All");
+  }, [propCategory]);
 
+  // Fetch on mount
   useEffect(() => {
-    if (data && data.length > 0) {
-      setProducts(data);
-    }
-  }, [data]);
+    refreshData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const filteredProducts = selectedCategory
-    ? products.filter((product) => product.category === selectedCategory)
-    : products;
+  const products = Array.isArray(data) ? data : [];
+  const isLoading = products.length === 0 && !isError;
+
+  // Filter
+  let filtered = activeCategory === "All"
+    ? products
+    : products.filter((p) => p.category === activeCategory);
+
+  if (searchQuery.trim()) {
+    filtered = filtered.filter((p) =>
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.brand.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
+
+  // Sort
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === "price_asc")  return Number(a.price) - Number(b.price);
+    if (sortBy === "price_desc") return Number(b.price) - Number(a.price);
+    if (sortBy === "name_asc")   return a.name.localeCompare(b.name);
+    return 0;
+  });
+
+  const handleAddToCart = (e, product) => {
+    e.preventDefault();
+    if (!product.productAvailable) return;
+    addToCart(product);
+    setAddedIds((prev) => ({ ...prev, [product.id]: true }));
+    toast.success(`${product.name} added to cart!`);
+    setTimeout(() => setAddedIds((prev) => ({ ...prev, [product.id]: false })), 1500);
+  };
 
   if (isError) {
     return (
-      <h2 className="text-center" style={{ padding: "18rem" }}>
-      <img src={unplugged} alt="Error" style={{ width: '100px', height: '100px' }}/>
-      </h2>
+      <div className="shop-page">
+        <div className="shop-error">
+          <span className="shop-error-icon">🔌</span>
+          <h2>Connection Lost</h2>
+          <p>Unable to reach the server. Please check your backend.</p>
+          <button className="shop-retry-btn" onClick={refreshData}>Try Again</button>
+        </div>
+      </div>
     );
   }
+
   return (
-    <>
-      <div
-        className="grid"
-        style={{
-          marginTop: "64px",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "20px",
-          padding: "20px",
-        }}
-      >
-        {filteredProducts.length === 0 ? (
-          <h2
-            className="text-center"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gridColumn: "1 / -1",
-            }}
+    <div className="shop-page">
+      {/* ── PAGE HEADER ── */}
+      <div className="shop-header">
+        <div className="shop-header-content">
+          <h1 className="shop-title">
+            {activeCategory === "All" ? "All Products" : `${CATEGORY_ICONS[activeCategory] || ""} ${activeCategory}`}
+          </h1>
+          <p className="shop-count">
+            {isLoading ? "Loading…" : `${sorted.length} product${sorted.length !== 1 ? "s" : ""}`}
+          </p>
+        </div>
+
+        {/* Search + Sort */}
+        <div className="shop-controls">
+          <div className="shop-search-wrap">
+            <span className="shop-search-icon">🔍</span>
+            <input
+              className="shop-search-input"
+              type="text"
+              placeholder="Search products or brands…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              id="shop-search-input"
+            />
+            {searchQuery && (
+              <button className="shop-search-clear" onClick={() => setSearchQuery("")}>✕</button>
+            )}
+          </div>
+          <select
+            className="shop-sort-select"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            id="shop-sort-select"
           >
-            No Products Available
-          </h2>
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* ── CATEGORY PILLS ── */}
+      <div className="shop-categories">
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat}
+            className={`shop-cat-pill ${activeCategory === cat ? "active" : ""}`}
+            onClick={() => setActiveCategory(cat)}
+            id={`cat-pill-${cat.toLowerCase()}`}
+          >
+            {CATEGORY_ICONS[cat] && <span>{CATEGORY_ICONS[cat]}</span>}
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* ── PRODUCT GRID ── */}
+      <div className="shop-grid">
+        {isLoading ? (
+          // Skeleton cards
+          [1,2,3,4,5,6].map((i) => (
+            <div key={i} className="shop-card shop-card-skeleton">
+              <div className="shop-card-img-wrap skel-block"></div>
+              <div className="shop-card-body">
+                <div className="skel-line skel-short"></div>
+                <div className="skel-line"></div>
+                <div className="skel-line skel-long"></div>
+                <div className="skel-footer">
+                  <div className="skel-price"></div>
+                  <div className="skel-btn"></div>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : sorted.length === 0 ? (
+          <div className="shop-empty">
+            <span className="shop-empty-icon">🛒</span>
+            <h3>No products found</h3>
+            <p>Try changing the category or search query</p>
+            <button
+              className="shop-empty-reset"
+              onClick={() => { setActiveCategory("All"); setSearchQuery(""); }}
+            >
+              Clear filters
+            </button>
+          </div>
         ) : (
-          filteredProducts.map((product) => {
-            const { id, brand, name, price, productAvailable } =
-              product;
-            const cardStyle = {
-              width: "18rem",
-              height: "12rem",
-              boxShadow: "rgba(0, 0, 0, 0.24) 0px 2px 3px",
-              backgroundColor: productAvailable ? "#fff" : "#ccc",
-            };
+          sorted.map((product) => {
+            const { id, brand, name, price, productAvailable, category, stockQuantity } = product;
+            const icon = CATEGORY_ICONS[category] || "📦";
+            const wasAdded = addedIds[id];
+
             return (
-              <div
-                className="card mb-3"
-                style={{
-                  width: "250px",
-                  height: "220px",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                  borderRadius: "10px",
-                  overflow: "hidden", 
-                  backgroundColor: productAvailable ? "#fff" : "#ccc",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent:'flex-start',
-                  alignItems:'stretch'
-                }}
-                key={id}
-              >
-                <Link
-                  to={`/product/${id}`}
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <div
-                    className="card-body"
-                    style={{
-                      flexGrow: 1,
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      padding: "20px 10px 10px",
-                    }}
-                  >
-                    <div>
-                      <h5
-                        className="card-title"
-                        style={{ margin: "0 0 10px 0", fontSize: "1.2rem" }}
+              <div className={`shop-card ${!productAvailable ? "shop-card-oos" : ""}`} key={id} id={`product-card-${id}`}>
+                {/* Availability badge */}
+                {!productAvailable && (
+                  <div className="shop-card-badge oos-badge">Out of Stock</div>
+                )}
+                {productAvailable && stockQuantity <= 5 && stockQuantity > 0 && (
+                  <div className="shop-card-badge low-badge">Only {stockQuantity} left!</div>
+                )}
+
+                <Link to={`/product/${id}`} className="shop-card-link">
+                  {/* Product icon / image area */}
+                  <div className="shop-card-img-wrap">
+                    <span className="shop-card-icon">{icon}</span>
+                    <div className="shop-card-category-tag">{category}</div>
+                  </div>
+
+                  {/* Card body */}
+                  <div className="shop-card-body">
+                    <p className="shop-card-brand">{brand}</p>
+                    <h3 className="shop-card-name">{name}</h3>
+
+                    <div className="shop-card-footer">
+                      <div className="shop-card-price">
+                        <span className="price-symbol">₹</span>
+                        {Number(price).toLocaleString("en-IN")}
+                      </div>
+
+                      <button
+                        className={`shop-add-btn ${wasAdded ? "added" : ""} ${!productAvailable ? "disabled" : ""}`}
+                        onClick={(e) => handleAddToCart(e, product)}
+                        disabled={!productAvailable}
+                        id={`add-to-cart-${id}`}
+                        title={productAvailable ? "Add to cart" : "Out of stock"}
                       >
-                        {name.toUpperCase()}
-                      </h5>
-                      <i
-                        className="card-brand"
-                        style={{ fontStyle: "italic", fontSize: "0.8rem" }}
-                      >
-                        {"~ " + brand}
-                      </i>
+                        {wasAdded ? "✓ Added" : productAvailable ? "+ Cart" : "Sold Out"}
+                      </button>
                     </div>
-                    <hr className="hr-line" style={{ margin: "10px 0" }} />
-                    <div className="home-cart-price">
-                      <h5
-                        className="card-text"
-                        style={{ fontWeight: "600", fontSize: "1.1rem",marginBottom:'5px' }}
-                      >
-                        <i class="bi bi-currency-rupee"></i>
-                        {price}
-                      </h5>
-                    </div>
-                    <button
-                      className="btn-hover color-9"
-                      style={{margin:'10px 25px 0px '  }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        addToCart(product);
-                      }}
-                      disabled={!productAvailable}
-                    >
-                      {productAvailable ? "Add to Cart" : "Out of Stock"}
-                    </button> 
                   </div>
                 </Link>
               </div>
@@ -140,7 +223,7 @@ const Home = ({ selectedCategory }) => {
           })
         )}
       </div>
-    </>
+    </div>
   );
 };
 
