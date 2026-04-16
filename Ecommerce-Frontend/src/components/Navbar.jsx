@@ -71,7 +71,7 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
   //       setNoResults(results.length === 0);
   //       console.log(results);
   //     } catch (error) {
-  //       console.error("Error searching:", error.response ? error.response.data : error.mesdb_userge);
+  //       console.error("Error searching:", error.response ? error.response.data : error.message);
   //     }
   //   } else {
   //     setShowSearchResults(false);
@@ -203,7 +203,7 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
                         ))
                     ) : (
                       noResults && (
-                        <p className="no-results-mesdb_userge">
+                        <p className="no-results-message">
                           No Prouduct with such Name
                         </p>
                       )

@@ -1,13 +1,13 @@
 services:
   db:
-    image: db_user:15-alpine
-    container_name: db_user_db
+    image: postgres:15-alpine
+    container_name: postgres_db
     environment:
       POSTGRES_DB: ecommerce
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - db_user_data:/var/lib/db_userql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ecommerce"]
       interval: 5s
@@ -26,11 +26,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:db_userql://db:5432/ecommerce}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/ecommerce}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.db_userql.Driver
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_JPA_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_FLYWAY_REPAIR_ON_MIGRATE: "true"
       JAVA_TOOL_OPTIONS: -Duser.timezone=UTC
     depends_on:
       db:
@@ -57,4 +58,4 @@ networks:
     driver: bridge
 
 volumes:
-  db_user_data:
+  postgres_data:

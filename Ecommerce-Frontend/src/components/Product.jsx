@@ -1,15 +1,14 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useContext, useEffect } from "react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AppContext from "../Context/Context";
 import axios from "../axios";
-import UpdateProduct from "./UpdateProduct";
+import "./ProductDetail.css";
+import toast from "react-hot-toast";
+
 const Product = () => {
   const { id } = useParams();
-  const { data, addToCart, removeFromCart, cart, refreshData } =
-    useContext(AppContext);
+  const { addToCart, removeFromCart, refreshData } = useContext(AppContext);
   const [product, setProduct] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,34 +18,23 @@ const Product = () => {
           `http://localhost:8080/api/product/${id}`
         );
         setProduct(response.data);
-        if (response.data.imageName) {
-          fetchImage();
-        }
       } catch (error) {
         console.error("Error fetching product:", error);
       }
     };
-
-    const fetchImage = async () => {
-      const response = await axios.get(
-        `http://localhost:8080/api/product/${id}/image`,
-        { responseType: "blob" }
-      );
-      setImageUrl(URL.createObjectURL(response.data));
-    };
-
     fetchProduct();
   }, [id]);
 
   const deleteProduct = async () => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
       await axios.delete(`http://localhost:8080/api/product/${id}`);
       removeFromCart(id);
-      console.log("Product deleted successfully");
-      alert("Product deleted successfully");
+      toast.success("Product deleted successfully");
       refreshData();
       navigate("/");
     } catch (error) {
+      toast.error("Error deleting product");
       console.error("Error deleting product:", error);
     }
   };
@@ -57,116 +45,111 @@ const Product = () => {
 
   const handlAddToCart = () => {
     addToCart(product);
-    alert("Product added to cart");
+    toast.success(`${product.name} added to cart!`, {
+      icon: '🛒',
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+      },
+    });
   };
+
+  const goBack = () => {
+    navigate(-1);
+  };
+
   if (!product) {
     return (
-      <h2 className="text-center" style={{ padding: "10rem" }}>
-        Loading...
-      </h2>
+      <div className="product-detail-page">
+        <div className="loader-container">
+          <div className="spinner"></div>
+          <p>Discovering brilliance...</p>
+        </div>
+      </div>
     );
   }
+
+  // Placeholder image based on category
+  const getProductImage = (category) => {
+    const images = {
+      Laptop: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800",
+      Mobile: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=800",
+      Headphone: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800",
+      Electronics: "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=800",
+      Fashion: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=800",
+      Toys: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=800",
+    };
+    return images[category] || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800";
+  };
+
   return (
-    <>
-      <div className="containers" style={{ display: "flex" }}>
-        <img
-          className="left-column-img"
-          src={imageUrl}
-          alt={product.imageName}
-          style={{ width: "50%", height: "auto" }}
-        />
+    <div className="product-detail-page">
+      <div className="product-card-container">
+        
+        {/* Left Column: Visuals */}
+        <div className="product-image-section">
+          <div className="category-floater">{product.category}</div>
+          <img 
+            src={getProductImage(product.category)} 
+            alt={product.name} 
+            className="product-main-view" 
+          />
+        </div>
 
-        <div className="right-column" style={{ width: "50%" }}>
-          <div className="product-description">
-            <div style={{display:'flex',justifyContent:'space-between' }}>
-            <span style={{ fontSize: "1.2rem", fontWeight: 'lighter' }}>
-              {product.category}
-            </span>
-            <p className="release-date" style={{ marginBottom: "2rem" }}>
-              
-              <h6>Listed : <span> <i> {new Date(product.releaseDate).toLocaleDateString()}</i></span></h6>
-              {/* <i> {new Date(product.releaseDate).toLocaleDateString()}</i> */}
-            </p>
-            </div>
-            
-           
-            <h1 style={{ fontSize: "2rem", marginBottom: "0.5rem",textTransform: 'capitalize', letterSpacing:'1px' }}>
-              {product.name}
-            </h1>
-            <i style={{ marginBottom: "3rem" }}>{product.brand}</i>
-            <p style={{fontWeight:'bold',fontSize:'1rem',margin:'10px 0px 0px'}}>PRODUCT DESCRIPTION :</p>
-            <p style={{ marginBottom: "1rem" }}>{product.description}</p>
-          </div>
+        {/* Right Column: Information */}
+        <div className="product-info-section">
+          <button onClick={goBack} className="back-btn">
+            <span>←</span> Back to Gallery
+          </button>
 
-          <div className="product-price">
-            <span style={{ fontSize: "2rem", fontWeight: "bold" }}>
-              {"$" + product.price}
-            </span>
-            <button
-              className={`cart-btn ${
-                !product.productAvailable ? "didb_userbled-btn" : ""
-              }`}
-              onClick={handlAddToCart}
-              didb_userbled={!product.productAvailable}
-              style={{
-                padding: "1rem 2rem",
-                fontSize: "1rem",
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-                marginBottom: "1rem",
-              }}
-            >
-              {product.productAvailable ? "Add to cart" : "Out of Stock"}
-            </button>
-            <h6 style={{ marginBottom: "1rem" }}>
-              Stock Available :{" "}
-              <i style={{ color: "green", fontWeight: "bold" }}>
-                {product.stockQuantity}
-              </i>
-            </h6>
+          <span className="product-brand">{product.brand}</span>
+          <h1 className="product-title">{product.name}</h1>
           
+          <div className="product-meta">
+            <span className="product-date">
+              Released: {new Date(product.releaseDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+            </span>
+            <div className={`stock-status ${product.productAvailable ? 'in-stock' : 'out-stock'}`}>
+              {product.productAvailable ? `● In Stock (${product.stockQuantity})` : '● Out of Stock'}
+            </div>
           </div>
-          <div className="update-button" style={{ display: "flex", gap: "1rem" }}>
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={handleEditClick}
-              style={{
-                padding: "1rem 2rem",
-                fontSize: "1rem",
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Update
-            </button>
-            {/* <UpdateProduct product={product} onUpdate={handleUpdate} /> */}
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={deleteProduct}
-              style={{
-                padding: "1rem 2rem",
-                fontSize: "1rem",
-                backgroundColor: "#dc3545",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Delete
-            </button>
+
+          <div className="description-area">
+            <p className="description-label">The Details</p>
+            <p className="product-desc">{product.description}</p>
+          </div>
+
+          <div className="price-action-area">
+            <div className="price-tag">
+              <span className="price-label">Investment Price</span>
+              <span className="price-value">₹{product.price.toLocaleString()}</span>
+            </div>
+
+            <div className="buy-group">
+              <button 
+                className="btn-premium btn-add-cart"
+                onClick={handlAddToCart}
+                disabled={!product.productAvailable}
+              >
+                {product.productAvailable ? (
+                  <><span>⚡</span> Add to Collection</>
+                ) : 'Limited Availability'}
+              </button>
+              
+              <button className="btn-premium btn-secondary">
+                <span>♡</span> Save for Later
+              </button>
+            </div>
+
+            <div className="admin-actions">
+              <button onClick={handleEditClick} className="admin-btn">Edit Details</button>
+              <button onClick={deleteProduct} className="admin-btn delete">Remove from Store</button>
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

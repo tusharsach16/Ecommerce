@@ -21,7 +21,7 @@ public class HealthController {
             jdbcTemplate.queryForObject("SELECT 1", Integer.class);
             return Map.of("status", "UP", "database", "PostgreSQL Connected");
         } catch (Exception e) {
-            return Map.of("status", "DOWN", "error", e.getMesdb_userge());
+            return Map.of("status", "DOWN", "error", e.getMessage());
         }
     }
 }

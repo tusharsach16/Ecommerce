@@ -26,7 +26,7 @@ The easiest way to get the entire stack (Backend, Frontend, and PostgreSQL) runn
    ```env
    POSTGRES_USER=your_user
    POSTGRES_PASSWORD=your_password
-   SPRING_DATASOURCE_URL=jdbc:db_userql://db:5432/ecommerce
+   SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ecommerce
    ```
 3. **Run the application**:
    ```bash

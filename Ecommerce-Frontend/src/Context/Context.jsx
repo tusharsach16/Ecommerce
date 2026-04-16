@@ -48,7 +48,7 @@ export const AppProvider = ({ children }) => {
       const response = await axios.get("/products");
       setData(response.data);
     } catch (error) {
-      setIsError(error.mesdb_userge);
+      setIsError(error.message);
     }
   };
 
