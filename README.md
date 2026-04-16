@@ -95,14 +95,24 @@ Configure the following secrets in your GitHub repository:
 
 ## 📡 Core API Endpoints
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/products` | Fetch all products |
-| `GET` | `/api/product/{id}` | Get specific product details |
-| `POST` | `/api/product` | Add a new product (with image) |
-| `PUT` | `/api/product/{id}` | Update product details |
-| `DELETE` | `/api/product/{id}` | Delete a product |
-| `GET` | `/api/health` | Check Database & API status |
+| `GET`       | `/api/products`        | Fetch all products                      |
+| `GET`       | `/api/product/{id}`   | Get specific product details            |
+| `POST`      | `/api/product`        | Add a new product                       |
+| `DELETE`    | `/api/product/{id}`   | Delete a product                        |
+| `POST`      | `/api/orders`         | Place an order (Atomic Transaction)     |
+| `GET`       | `/api/orders/user/{id}`| Fetch user order history                |
+| `POST`      | `/api/auth/register`  | Register a new user                     |
+| `POST`      | `/api/auth/login`     | Secure Login (JWT)                      |
+| `GET`       | `/api/health`         | Status Check                            |
+
+---
+
+## ✨ New Features (v2.0)
+
+*   **Premium Product UI**: Full redesign of product details with glassmorphism and dynamic category-based visuals.
+*   **Transactional Order System**: Robust backend service using `@Transactional` to ensure data integrity during checkout.
+*   **Secure Auth**: End-to-end JWT authentication with hardened secret management and environment parity.
+*   **Auto-Healing Migrations**: Resilient Flyway setup that automatically repairs database schema mismatches in Docker.
 
 ---
 
