@@ -8,6 +8,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ecommerce"]
       interval: 5s
@@ -32,6 +33,7 @@ services:
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_JPA_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
       SPRING_FLYWAY_REPAIR_ON_MIGRATE: "true"
+      JWT_SECRET: ${JWT_SECRET}
       JAVA_TOOL_OPTIONS: -Duser.timezone=UTC
     depends_on:
       db:
