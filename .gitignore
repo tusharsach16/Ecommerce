@@ -15,9 +15,18 @@ target/
 node_modules/
 dist/
 build/
-.env
-.env.local
+.env*
+!.env.example
 vite.config.js.timestamp-*
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+bin/
 
 # Project Specific
 uploads/
