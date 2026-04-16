@@ -1,438 +1,234 @@
-// import React, { useContext, useState, useEffect } from "react";
-// // import axios from '../axios';
-// import AppContext from "../Context/Context";
-// import axios from "axios";
-// import CheckoutPopup from "./CheckoutPopup";
-// import { Button } from "react-bootstrap";
-// const Cart = () => {
-//   const { cart, removeFromCart } = useContext(AppContext);
-//   const [cartItems, setCartItems] = useState([]);
-//   const [totalPrice, setTotalPrice] = useState(0);
-//   const [cartImage, setCartImage] =useState([])
-//   const [showModal, setShowModal] = useState(false);
-  
-//   // useEffect(() => {
-//   //   const fetchImagesAndUpdateCart = async () => {
-//   //     console.log("Cart", cart);
-//   //     const updatedCartItems = await Promise.all(
-//   //       cart.map(async (item) => {
-//   //         console.log("ITEM",item)
-//   //         try {
-//   //           const response = await axios.get(
-//   //             `http://localhost:8080/api/product/${item.id}/image`,
-//   //             { responseType: "blob" }
-//   //           );
-//             // const imageFile = await converUrlToFile(response.data,response.data.imageName)
-//   //           setCartImage(imageFile);
-//   //           const imageUrl = URL.createObjectURL(response.data);
-//   //           return { ...item, imageUrl, available: true };
-//   //         } catch (error) {
-//   //           console.error("Error fetching image:", error);
-//   //           return { ...item, imageUrl: "placeholder-image-url", available: false };
-//   //         }
-//   //       })
-//   //     );
-//   //     const filteredCartItems = updatedCartItems.filter((item) => item.available);
-//   //     setCartItems(updatedCartItems);
-     
-//   //   };
-
-//   //   if (cart.length) {
-//   //     fetchImagesAndUpdateCart();
-//   //   }
-//   // }, [cart]);
-
-//   useEffect(() => {
-//     const fetchImagesAndUpdateCart = async () => {
-//       try {
-    
-//         const response = await axios.get("http://localhost:8080/api/products");
-//         const backendProductIds = response.data.map((product) => product.id);
-
-//         const updatedCartItems = cart.filter((item) => backendProductIds.includes(item.id));
-//         const cartItemsWithImages = await Promise.all(
-//           updatedCartItems.map(async (item) => {
-//             try {
-//               const response = await axios.get(
-//                 `http://localhost:8080/api/product/${item.id}/image`,
-//                 { responseType: "blob" }
-//               );
-//               const imageFile = await converUrlToFile(response.data, response.data.imageName);
-//               setCartImage(imageFile)
-//               const imageUrl = URL.createObjectURL(response.data);
-//               return { ...item, imageUrl };
-//             } catch (error) {
-//               console.error("Error fetching image:", error);
-//               return { ...item, imageUrl: "placeholder-image-url" };
-//             }
-//           })
-//         );
-
-//         setCartItems(cartItemsWithImages);
-//       } catch (error) {
-//         console.error("Error fetching product data:", error);
-    
-//       }
-//     };
-
-//     if (cart.length) {
-//       fetchImagesAndUpdateCart();
-//     }
-//   }, [cart]);
-  
-
-
-//   useEffect(() => {
-//     console.log("CartItems", cartItems);
-//   }, [cartItems]);
-//   const converUrlToFile = async(blobData, fileName) => {
-//     const file = new File([blobData], fileName, { type: blobData.type });
-//     return file;
-//   }
-//   useEffect(() => {
-//     const total = cartItems.reduce(
-//       (acc, item) => acc + item.price * item.quantity,
-//       0
-//     );
-//     setTotalPrice(total);
-//   }, [cartItems]);
-
- 
-//   const handleIncreaseQuantity = (itemId) => {
-//     const newCartItems = cartItems.map((item) =>
-//       item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-//     );
-//     setCartItems(newCartItems);
-//   };
-//   const handleDecreaseQuantity = (itemId) => {
-//     const newCartItems = cartItems.map((item) =>
-//       item.id === itemId
-//         ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
-//         : item
-//     );
-//     setCartItems(newCartItems);
-//   };
-
-//   const handleRemoveFromCart = (itemId) => {
-//     removeFromCart(itemId);
-//     const newCartItems = cartItems.filter((item) => item.id !== itemId);
-//     setCartItems(newCartItems);
-//   };
-
-//   const handleCheckout = async () => {
-//     try {
-//       for (const item of cartItems) {
-//         const { imageUrl, imageName, imageData, imageType, quantity, ...rest } = item;
-//         const updatedStockQuantity = item.stockQuantity - item.quantity;
-  
-//         const updatedProductData = { ...rest, stockQuantity: updatedStockQuantity };
-//         console.log("updated product data", updatedProductData)
-  
-//         const cartProduct = new FormData();
-//         cartProduct.append("imageFile", cartImage);
-//         cartProduct.append(
-//           "product",
-//           new Blob([JSON.stringify(updatedProductData)], { type: "application/json" })
-//         );
-  
-//         await axios
-//           .put(`http://localhost:8080/api/product/${item.id}`, cartProduct, {
-//             headers: {
-//               "Content-Type": "multipart/form-data",
-//             },
-//           })
-//           .then((response) => {
-//             console.log("Product updated successfully:", (cartProduct));
-            
-//           })
-//           .catch((error) => {
-//             console.error("Error updating product:", error);
-//           });
-//       }
-//       setCartItems([]);
-//       setShowModal(false);
-//     } catch (error) {
-//       console.log("error during checkout", error);
-//     }
-//   };
-  
-//   return (
-//     <div className="cart-container">
-//       <div className="shopping-cart">
-//         <div className="title">Shopping Bag</div>
-//         {cartItems.length === 0 ? (
-//           <div className="empty" style={{ textAlign: "left", padding: "2rem" }}>
-//             <h4>Your cart is empty</h4>
-//           </div>
-//         ) : (
-//           <>
-//             {cartItems.map((item) => (
-//               <li key={item.id} className="cart-item">
-//                 <div
-//                   className="item"
-//                   style={{ display: "flex", alignContent: "center" }}
-//                   key={item.id}
-//                 >
-//                   <div className="buttons">
-//                     <div className="buttons-liked">
-//                       <i className="bi bi-heart"></i>
-//                     </div>
-//                   </div>
-//                   <div>
-//                     <img
-//                       // src={cartImage ? URL.createObjectURL(cartImage) : "Image unavailable"}
-//                       src={item.imageUrl}
-//                       alt={item.name}
-//                       className="cart-item-image"
-//                     />
-//                   </div>
-//                   <div className="description">
-//                     <span>{item.brand}</span>
-//                     <span>{item.name}</span>
-//                   </div>
-
-//                   <div className="quantity">
-//                     <button
-//                       className="plus-btn"
-//                       type="button"
-//                       name="button"
-//                       onClick={() => handleIncreaseQuantity(item.id)}
-//                     >
-//                       <i className="bi bi-plus-square-fill"></i>
-//                     </button>
-//                     <input
-//                       type="button"
-//                       name="name"
-//                       value={item.quantity}
-//                       readOnly
-//                     />
-//                     <button
-//                       className="minus-btn"
-//                       type="button"
-//                       name="button"
-//                       // style={{ backgroundColor: "white" }}
-//                       onClick={() => handleDecreaseQuantity(item.id)}
-//                     >
-//                       <i className="bi bi-dash-square-fill"></i>
-//                     </button>
-//                   </div>
-
-//                   <div className="total-price " style={{ textAlign: "center" }}>
-//                     ${item.price * item.quantity}
-//                   </div>
-//                   <button
-//                     className="remove-btn"
-//                     onClick={() => handleRemoveFromCart(item.id)}
-//                   >
-//                     <i className="bi bi-trash3-fill"></i>
-//                   </button>
-//                 </div>
-//               </li>
-//             ))}
-//             <div className="total">Total: ${totalPrice}</div>
-//             <button
-//               className="btn btn-primary"
-//               style={{ width: "100%" }}
-//               onClick={handleCheckout}
-//             >
-//               Checkout
-//             </button>
-//           </>
-//         )}
-//       </div>
-//       <CheckoutPopup
-//         show={showModal}
-//         handleClose={() => setShowModal(false)}
-//         cartItems={cartItems}
-//         totalPrice={totalPrice}
-//         handleCheckout={handleCheckout}
-//       />
-//     </div>
-
-//   );
-// };
-
-// export default Cart;
-
-
-
-
-
 import React, { useContext, useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import AppContext from "../Context/Context";
+import { useAuth } from "../Context/AuthContext";
 import axios from "axios";
 import CheckoutPopup from "./CheckoutPopup";
-import { Button } from 'react-bootstrap';
+import toast from "react-hot-toast";
+
+const CATEGORY_ICONS = {
+  Laptop: "💻",
+  Mobile: "📱",
+  Headphone: "🎧",
+  Electronics: "📺",
+  Fashion: "👟",
+  Toys: "🧸",
+};
 
 const Cart = () => {
-  const { cart, removeFromCart , clearCart } = useContext(AppContext);
+  const { user } = useAuth();
+  const { cart, removeFromCart, deleteFromCart, clearCart, addToCart } = useContext(AppContext);
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [cartImage, setCartImage] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const navigate = useNavigate();
 
+  // Sync cart items with backend truth (ensure products still exist and have correct info)
   useEffect(() => {
     const updateCartItems = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/products");
-        const backendProductIds = response.data.map((product) => product.id);
+        const products = response.data;
+        
+        // Filter out items that might have been deleted from backend
+        // Update price/info if they changed
+        const validItems = cart.map(cartItem => {
+          const latestProduct = products.find(p => p.id === cartItem.id);
+          if (!latestProduct) return null;
+          return { ...latestProduct, quantity: cartItem.quantity };
+        }).filter(Boolean);
 
-        const updatedCartItems = cart.filter((item) => backendProductIds.includes(item.id));
-        setCartItems(updatedCartItems);
+        setCartItems(validItems);
       } catch (error) {
         console.error("Error fetching product data:", error);
       }
     };
 
-    if (cart.length) {
-      updateCartItems();
-    }
+    if (cart.length) updateCartItems();
+    else setCartItems([]);
   }, [cart]);
 
+  // Calculate total price
   useEffect(() => {
-    const total = cartItems.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0
-    );
+    const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotalPrice(total);
   }, [cartItems]);
 
-  const handleIncreaseQuantity = (itemId) => {
-    const newCartItems = cartItems.map((item) => {
-      if (item.id === itemId) {
-        if (item.quantity < item.stockQuantity) {
-          return { ...item, quantity: item.quantity + 1 };
-        } else {
-          alert("Cannot add more than available stock");
-        }
-      }
-      return item;
-    });
-    setCartItems(newCartItems);
-  };
-  
-
-  const handleDecreaseQuantity = (itemId) => {
-    const newCartItems = cartItems.map((item) =>
-      item.id === itemId
-        ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
-        : item
-    );
-    setCartItems(newCartItems);
-  };
-
-  const handleRemoveFromCart = (itemId) => {
-    removeFromCart(itemId);
-    const newCartItems = cartItems.filter((item) => item.id !== itemId);
-    setCartItems(newCartItems);
-  };
-
-  const handleCheckout = async () => {
-    try {
-      for (const item of cartItems) {
-        const { quantity, ...productData } = item;
-        const updatedStockQuantity = item.stockQuantity - item.quantity;
-  
-        const updatedProductData = { ...productData, stockQuantity: updatedStockQuantity };
-        console.log("updated product data", updatedProductData)
-  
-        await axios
-          .put(`http://localhost:8080/api/product/${item.id}`, updatedProductData)
-          .then((response) => {
-            console.log("Product updated successfully");
-          })
-          .catch((error) => {
-            console.error("Error updating product:", error);
-          });
-      }
-      clearCart();
-      setCartItems([]);
-      setShowModal(false);
-    } catch (error) {
-      console.log("error during checkout", error);
+  const handleIncrease = (itemId) => {
+    const item = cartItems.find(i => i.id === itemId);
+    if (item.quantity < item.stockQuantity) {
+      addToCart(item); // AppContext's addToCart handles incrementing if exists
+    } else {
+      toast.error(`Only ${item.stockQuantity} items available in stock`);
     }
   };
 
+  const handleDecrease = (itemId) => {
+    removeFromCart(itemId);
+  };
+
+  const handleCheckout = async () => {
+    if (!user) {
+      toast.error("Please login to complete your purchase");
+      navigate("/login");
+      return;
+    }
+
+    setIsCheckoutLoading(true);
+    try {
+      const orderPayload = {
+        userId: user.id,
+        totalAmount: totalPrice,
+        items: cartItems.map(item => ({
+          productId: item.id,
+          quantity: item.quantity,
+          price: item.price
+        }))
+      };
+
+      await axios.post("http://localhost:8080/api/orders", orderPayload);
+      
+      clearCart();
+      toast.success("Order placed successfully!");
+      setShowModal(false);
+      navigate("/orders");
+    } catch (error) {
+      const backendError = error.response?.data;
+      const displayMsg = typeof backendError === 'string' ? backendError : "Error during checkout. Please try again.";
+      toast.error(displayMsg);
+      console.error("Checkout error detail:", backendError || error.message);
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+  };
+
+  if (cart.length === 0) {
+    return (
+      <div className="cart-empty-page">
+        <div className="cart-empty-card">
+          <div className="empty-icon">🛒</div>
+          <h1>Your cart is empty</h1>
+          <p>But it's not too late to add some magic! Explore our products and find something you love.</p>
+          <Link to="/shop" className="continue-shopping">Start Shopping</Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="cart-container">
-      <div className="shopping-cart">
-        <div className="title">Shopping Bag</div>
-        {cartItems.length === 0 ? (
-          <div className="empty" style={{ textAlign: "left", padding: "2rem" }}>
-            <h4>Your cart is empty</h4>
+    <div className="cart-page">
+      <div className="cart-layout">
+        <div className="cart-items-section">
+          <div className="cart-header">
+            <h1 className="cart-title">Shopping Bag</h1>
+            <span className="item-count">{cartItems.length} Items</span>
           </div>
-        ) : (
-          <>
+
+          <div className="cart-list">
             {cartItems.map((item) => (
-              <li key={item.id} className="cart-item">
-                <div
-                  className="item"
-                  style={{ display: "flex", alignContent: "center" }}
-                  key={item.id}
-                >
-                 
-                  <div className="description">
-                    <span>{item.brand}</span>
-                    <span>{item.name}</span>
-                  </div>
+              <div key={item.id} className="cart-card">
+                <div className="cart-product-visual">
+                  <span className="cart-product-icon">
+                    {CATEGORY_ICONS[item.category] || "📦"}
+                  </span>
+                </div>
+                
+                <div className="cart-product-info">
+                  <p className="cart-item-brand">{item.brand}</p>
+                  <h3 className="cart-item-name">{item.name}</h3>
+                  <p className="cart-item-category">{item.category}</p>
+                </div>
 
-                  <div className="quantity">
-                    <button
-                      className="plus-btn"
-                      type="button"
-                      name="button"
-                      onClick={() => handleIncreaseQuantity(item.id)}
-                    >
-                      <i className="bi bi-plus-square-fill"></i>
+                <div className="cart-controls">
+                  <div className="qty-picker">
+                    <button onClick={() => handleDecrease(item.id)} className="qty-btn" title="Decrease">
+                      <i className={`bi ${item.quantity > 1 ? "bi-dash" : "bi-trash"}`}></i>
                     </button>
-                    <input
-                      type="button"
-                      name="name"
-                      value={item.quantity}
-                      readOnly
-                    />
-                    <button
-                      className="minus-btn"
-                      type="button"
-                      name="button"
-                      onClick={() => handleDecreaseQuantity(item.id)}
-                    >
-                      <i className="bi bi-dash-square-fill"></i>
+                    <span className="qty-val">{item.quantity}</span>
+                    <button onClick={() => handleIncrease(item.id)} className="qty-btn" title="Increase">
+                      <i className="bi bi-plus"></i>
                     </button>
                   </div>
-
-                  <div className="total-price " style={{ textAlign: "center" }}>
-                    ${item.price * item.quantity}
+                  
+                  <div className="cart-item-price">
+                    <span className="p-sym">₹</span>
+                    {(item.price * item.quantity).toLocaleString("en-IN")}
                   </div>
-                  <button
-                    className="remove-btn"
-                    onClick={() => handleRemoveFromCart(item.id)}
+
+                  <button 
+                    className="cart-remove-top" 
+                    onClick={() => deleteFromCart(item.id)}
+                    title="Remove item"
                   >
-                    <i className="bi bi-trash3-fill"></i>
+                    <i className="bi bi-x-lg"></i>
                   </button>
                 </div>
-              </li>
+              </div>
             ))}
-            <div className="total">Total: ${totalPrice}</div>
-            <Button
-              className="btn btn-primary"
-              style={{ width: "100%" }}
+          </div>
+          
+          <div className="cart-footer-links">
+            <Link to="/shop" className="back-to-shop">
+              <i className="bi bi-arrow-left"></i> Continue Shopping
+            </Link>
+            <button className="clear-cart-btn" onClick={clearCart}>
+              Clear Bag
+            </button>
+          </div>
+        </div>
+
+        <div className="cart-summary-section">
+          <div className="summary-card">
+            <h2 className="summary-title">Order Summary</h2>
+            
+            <div className="summary-rows">
+              <div className="s-row">
+                <span>Subtotal</span>
+                <span>₹{totalPrice.toLocaleString("en-IN")}</span>
+              </div>
+              <div className="s-row">
+                <span>Shipping</span>
+                <span className="free-shipping">FREE</span>
+              </div>
+              <div className="s-row">
+                <span>Tax (GST)</span>
+                <span>₹0</span>
+              </div>
+              <hr className="summary-divider" />
+              <div className="s-row total-row">
+                <span>Estimated Total</span>
+                <span className="final-price">₹{totalPrice.toLocaleString("en-IN")}</span>
+              </div>
+            </div>
+
+            <button 
+              className="checkout-btn" 
               onClick={() => setShowModal(true)}
+              id="cart-checkout-btn"
             >
-              Checkout
-            </Button>
-          </>
-        )}
+              Secure Checkout <i className="bi bi-shield-check ms-2"></i>
+            </button>
+            
+            <div className="payment-badges">
+              <i className="bi bi-credit-card"></i>
+              <i className="bi bi-paypal"></i>
+              <i className="bi bi-apple"></i>
+              <i className="bi bi-google"></i>
+            </div>
+          </div>
+        </div>
       </div>
+
       <CheckoutPopup
         show={showModal}
         handleClose={() => setShowModal(false)}
         cartItems={cartItems}
         totalPrice={totalPrice}
         handleCheckout={handleCheckout}
+        isLoading={isCheckoutLoading}
       />
     </div>
-
   );
 };
 
