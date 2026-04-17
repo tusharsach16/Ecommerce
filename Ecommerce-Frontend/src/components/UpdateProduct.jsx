@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../axios";
 
 const UpdateProduct = () => {
   const { id } = useParams();
@@ -33,7 +33,7 @@ const UpdateProduct = () => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/product/${id}`
+          `/product/${id}`
         );
         setProduct(response.data);
       } catch (error) {
@@ -49,7 +49,7 @@ const UpdateProduct = () => {
 
     try {
       await axios.put(
-        `http://localhost:8080/api/product/${id}`,
+        `/product/${id}`,
         product
       );
       alert("Product updated successfully!");

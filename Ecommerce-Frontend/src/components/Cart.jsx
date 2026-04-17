@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AppContext from "../Context/Context";
 import { useAuth } from "../Context/AuthContext";
-import axios from "axios";
+import axios from "../axios";
 import CheckoutPopup from "./CheckoutPopup";
 import toast from "react-hot-toast";
 
@@ -28,7 +28,7 @@ const Cart = () => {
   useEffect(() => {
     const updateCartItems = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/products");
+        const response = await axios.get("/products");
         const products = response.data;
         
         // Filter out items that might have been deleted from backend
@@ -87,7 +87,7 @@ const Cart = () => {
         }))
       };
 
-      await axios.post("http://localhost:8080/api/orders", orderPayload);
+      await axios.post("/orders", orderPayload);
       
       clearCart();
       toast.success("Order placed successfully!");

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axios from "../axios";
 
 const CATEGORY_ICONS = {
   Laptop: "💻",
@@ -19,7 +19,7 @@ const Orders = () => {
 
   useEffect(() => {
     if (isLoggedIn && user?.id) {
-      axios.get(`http://localhost:8080/api/orders/user/${user.id}`)
+      axios.get(`/orders/user/${user.id}`)
         .then(res => {
           setOrders(res.data);
           setLoading(false);

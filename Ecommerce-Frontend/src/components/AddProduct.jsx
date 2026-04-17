@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../axios";
 import toast from "react-hot-toast";
 
 const CATEGORIES = ["Laptop", "Headphone", "Mobile", "Electronics", "Toys", "Fashion"];
@@ -46,7 +46,7 @@ const AddProduct = () => {
 
     setIsSubmitting(true);
     axios
-      .post("http://localhost:8080/api/product", product)
+      .post("/product", product)
       .then((response) => {
         toast.success("Product listed successfully!");
         navigate("/shop");

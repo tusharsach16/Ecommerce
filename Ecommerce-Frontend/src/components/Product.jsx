@@ -15,7 +15,7 @@ const Product = () => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/product/${id}`
+          `/product/${id}`
         );
         setProduct(response.data);
       } catch (error) {
@@ -28,7 +28,7 @@ const Product = () => {
   const deleteProduct = async () => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
-      await axios.delete(`http://localhost:8080/api/product/${id}`);
+      await axios.delete(`/product/${id}`);
       removeFromCart(id);
       toast.success("Product deleted successfully");
       refreshData();

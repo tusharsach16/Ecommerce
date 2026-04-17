@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
+import axios from "../axios";
 import { useAuth } from "../Context/AuthContext";
 import AppContext from "../Context/Context";
 import toast from "react-hot-toast";
@@ -53,7 +53,7 @@ const Navbar = ({ onSelectCategory }) => {
       setShowSearchResults(true);
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/products/search?keyword=${value}`
+          `/products/search?keyword=${value}`
         );
         setSearchResults(response.data);
         setNoResults(response.data.length === 0);
