@@ -20,9 +20,7 @@ services:
       - app-network
 
   backend:
-    build:
-      context: ./Ecommerce-Backend
-      dockerfile: Dockerfile
+    image: tushar1610/ecommerce-backend:latest
     container_name: springboot_backend
     ports:
       - "8080:8080"
@@ -42,9 +40,7 @@ services:
       - app-network
 
   frontend:
-    build:
-      context: ./Ecommerce-Frontend
-      dockerfile: Dockerfile
+    image: tushar1610/ecommerce-frontend:latest
     container_name: react_frontend
     ports:
       - "80:80"
